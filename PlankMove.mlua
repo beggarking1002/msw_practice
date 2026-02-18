@@ -1,0 +1,46 @@
+@Component
+script PlankMove extends Component
+
+	property number moveSpeed = 6
+
+	property number minX = -8
+
+	property number maxX = 8
+
+	method void OnBeginPlay()
+		    log("PlankMove BeginPlay")
+	end
+
+	method void OnUpdate(number deltaTime)
+		    -- 입력 축(좌우). 프로젝트마다 아래 두 방식 중 하나가 먹힘.
+		    local axis = 0
+		
+		    -- 1) 키 직접 체크 방식 (←/→, A/D)
+		    if _InputService ~= nil then
+		        if _InputService:IsKeyDown(KeyboardKey.Left) or _InputService:IsKeyDown(KeyboardKey.A) then
+		            axis = axis - 1
+		        end
+		        if _InputService:IsKeyDown(KeyboardKey.Right) or _InputService:IsKeyDown(KeyboardKey.D) then
+		            axis = axis + 1
+		        end
+		    end
+		
+		    if axis == 0 then
+		        return
+		    end
+		
+		    -- 현재 위치 가져오기
+		    local pos = self.Entity.TransformComponent.Position
+		
+		    -- 이동 (X축)
+		    pos.x = pos.x + axis * self.moveSpeed * deltaTime
+		
+		    -- 클램프(범위 제한)
+		    if pos.x < self.minX then pos.x = self.minX end
+		    if pos.x > self.maxX then pos.x = self.maxX end
+		
+		    -- 적용
+		    self.Entity.TransformComponent.Position = pos
+	end
+
+end
